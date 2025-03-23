@@ -1,4 +1,4 @@
-namespace BussinensLogic
+namespace Logic
 {
     internal class Ball : IBall
     {
