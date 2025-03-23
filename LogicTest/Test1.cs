@@ -1,4 +1,4 @@
-﻿namespace LogicTest
+﻿namespace Logic.Test
 {
     [TestClass]
     public sealed class Test1

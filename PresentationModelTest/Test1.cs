@@ -1,4 +1,4 @@
-﻿namespace PresentationModelTest
+﻿namespace Presentation.Model.Test
 {
     [TestClass]
     public sealed class Test1

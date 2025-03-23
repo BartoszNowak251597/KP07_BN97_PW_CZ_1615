@@ -3,9 +3,9 @@ using System;
 using System.ComponentModel;
 using System.Reactive;
 using System.Reactive.Linq;
-using PresentationModel;
-using ModelIBall = PresentationModel.IBall;
-using PresentationViewModel;
+using Presentation.Model;
+using ModelIBall = Presentation.Model.IBall;
+using Presentation.ViewModel;
 
 namespace PresentationViewModelTest
 {

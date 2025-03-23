@@ -5,7 +5,7 @@ using System.Reactive.Linq;
 using System.Reflection;
 using UnderneathLayerAPI = Logic.LogicAbstractAPI;
 
-namespace PresentationModel
+namespace Presentation.Model
 {
     internal class ModelImplementation : ModelAbstractApi
     {

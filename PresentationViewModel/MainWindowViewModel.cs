@@ -1,11 +1,11 @@
 ﻿using System;
 using System.Collections.ObjectModel;
-using PresentationModel;
-using PresentationViewModel.MVVMLight;
-using PresentationModel;
-using ModelIBall = PresentationModel.IBall;
+using Presentation.Model;
+using Presentation.ViewModel.MVVMLight;
+using Presentation.Model;
+using ModelIBall = Presentation.Model.IBall;
 
-namespace PresentationViewModel
+namespace Presentation.ViewModel
 {
     public class MainWindowViewModel : ViewModelBase, IDisposable
     {

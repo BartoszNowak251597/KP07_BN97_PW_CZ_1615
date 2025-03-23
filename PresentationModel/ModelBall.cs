@@ -4,7 +4,7 @@ using System.Runtime.CompilerServices;
 using Logic;
 using LogicIBall = Logic.IBall;
 
-namespace PresentationModel
+namespace Presentation.Model
 {
 
     internal class ModelBall : IBall

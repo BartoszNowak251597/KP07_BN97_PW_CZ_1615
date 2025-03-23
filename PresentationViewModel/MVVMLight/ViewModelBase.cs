@@ -2,7 +2,7 @@
 using System.Runtime.CompilerServices;
 
 
-namespace PresentationViewModel.MVVMLight
+namespace Presentation.ViewModel.MVVMLight
 {
     public class ViewModelBase : INotifyPropertyChanged
     {

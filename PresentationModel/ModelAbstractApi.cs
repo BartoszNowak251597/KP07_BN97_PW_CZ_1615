@@ -1,7 +1,7 @@
 ﻿using System;
 using System.ComponentModel;
 
-namespace PresentationModel
+namespace Presentation.Model
 {
     public interface IBall : INotifyPropertyChanged
     {
