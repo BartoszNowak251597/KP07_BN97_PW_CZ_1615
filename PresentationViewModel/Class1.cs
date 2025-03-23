@@ -1,4 +1,4 @@
-﻿namespace Presentation
+﻿namespace PresentationViewModel
 {
     public class Class1
     {
