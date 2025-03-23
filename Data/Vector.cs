@@ -10,7 +10,6 @@ namespace Data
 
         #endregion IVector
 
-        /// Creates new instance of <seealso cref="Vector"/> and initialize all properties
         public Vector(double XComponent, double YComponent)
         {
             x = XComponent;
