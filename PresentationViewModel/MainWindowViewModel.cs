@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Windows;
 using System.Collections.ObjectModel;
 using Presentation.Model;
 using Presentation.ViewModel.MVVMLight;
@@ -31,6 +32,7 @@ namespace Presentation.ViewModel
             ModelLayer.Start(numberOfBalls);
             Observer.Dispose();
         }
+
 
         public ObservableCollection<ModelIBall> Balls { get; } = new ObservableCollection<ModelIBall>();
 
