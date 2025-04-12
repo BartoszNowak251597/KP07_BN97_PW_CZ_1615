@@ -1,4 +1,6 @@
-﻿namespace Logic
+﻿using Data;
+
+namespace Logic
 {
     internal record Position : IPosition
     {
@@ -8,7 +10,6 @@
         public double y { get; init; }
 
         #endregion IPosition
-
         public Position(double posX, double posY)
         {
             x = posX;

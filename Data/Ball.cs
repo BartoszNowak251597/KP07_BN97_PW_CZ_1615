@@ -17,6 +17,9 @@
         public event EventHandler<IVector>? NewPositionNotification;
 
         public IVector Velocity { get; set; }
+        public IVector CurrentPosition => Position;
+
+        public double Radius { get; } = 10;
 
         #endregion IBall
 
