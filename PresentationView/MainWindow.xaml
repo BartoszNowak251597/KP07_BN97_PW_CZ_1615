@@ -40,6 +40,8 @@
         <StackPanel Grid.Row="0" Orientation="Horizontal" Margin="10,10,10,10">
             <TextBox x:Name="txtNumberOfBalls" Width="100" Margin="5" />
             <Button Content="Generate Balls" Width="120" Margin="5" Click="GenerateBalls_Click" />
+            <Button Content="Remove All Balls" Width="120" Margin="5"
+                    Command="{Binding RemoveBallsCommand}" />
         </StackPanel>
     </Grid>
 </Window>

@@ -19,6 +19,8 @@ namespace Presentation.ViewModel
         {
             ModelLayer = modelLayerAPI == null ? ModelAbstractApi.CreateModel() : modelLayerAPI;
             Observer = ModelLayer.Subscribe<ModelIBall>(x => Balls.Add(x));
+            RemoveBallsCommand = new RelayCommand(RemoveBalls, CanRemoveBalls);
+            Balls.CollectionChanged += (s, e) => RemoveBallsCommand.RaiseCanExecuteChanged();
         }
 
         #endregion ctor
@@ -30,11 +32,25 @@ namespace Presentation.ViewModel
             if (Disposed)
                 throw new ObjectDisposedException(nameof(MainWindowViewModel));
             ModelLayer.Start(numberOfBalls);
-            Observer.Dispose();
+            //Observer.Dispose();
         }
 
 
         public ObservableCollection<ModelIBall> Balls { get; } = new ObservableCollection<ModelIBall>();
+
+        public RelayCommand RemoveBallsCommand { get; }
+
+        // Remove all balls method
+        private void RemoveBalls()
+        {
+            Balls.Clear();
+        }
+
+        // Check if removal is allowed
+        private bool CanRemoveBalls()
+        {
+            return Balls.Any();
+        }
 
         #endregion public API
 
