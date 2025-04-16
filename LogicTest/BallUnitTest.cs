@@ -7,7 +7,7 @@
         public void MoveTestMethod()
         {
             DataBallFixture dataBallFixture = new DataBallFixture();
-            Ball newInstance = new(dataBallFixture);
+            Ball newInstance = new(dataBallFixture, 100.0, 200.0, 10.0);
             int numberOfCallBackCalled = 0;
             newInstance.NewPositionNotification += (sender, position) => { Assert.IsNotNull(sender); Assert.IsNotNull(position); numberOfCallBackCalled++; };
             dataBallFixture.Move();

@@ -5,6 +5,7 @@ using Presentation.Model;
 using Presentation.ViewModel.MVVMLight;
 using Presentation.Model;
 using ModelIBall = Presentation.Model.IBall;
+using System.Windows.Input;
 
 namespace Presentation.ViewModel
 {
@@ -19,37 +20,44 @@ namespace Presentation.ViewModel
         {
             ModelLayer = modelLayerAPI == null ? ModelAbstractApi.CreateModel() : modelLayerAPI;
             Observer = ModelLayer.Subscribe<ModelIBall>(x => Balls.Add(x));
-            RemoveBallsCommand = new RelayCommand(RemoveBalls, CanRemoveBalls);
-            Balls.CollectionChanged += (s, e) => RemoveBallsCommand.RaiseCanExecuteChanged();
+            GenerateCommand = new RelayCommand(GenerateFromCommand);
         }
-
+        public void InitializeTableSettings(double width, double height, double diameter)
+        {
+            ModelLayer.SetTableSettings(width, height, diameter);
+        }
         #endregion ctor
 
         #region public API
+
+        public ObservableCollection<ModelIBall> Balls { get; } = new ObservableCollection<ModelIBall>();
+
+        private int _ballCount = 12;
+        public int BallCount
+        {
+            get => _ballCount;
+            set
+            {
+                _ballCount = value;
+                RaisePropertyChanged(nameof(BallCount));
+            }
+        }
+
+        public ICommand GenerateCommand { get; }
 
         public void Start(int numberOfBalls)
         {
             if (Disposed)
                 throw new ObjectDisposedException(nameof(MainWindowViewModel));
             ModelLayer.Start(numberOfBalls);
-            //Observer.Dispose();
+            Observer.Dispose();
+            Observer = ModelLayer.Subscribe<ModelIBall>(x => Balls.Add(x));
         }
 
-
-        public ObservableCollection<ModelIBall> Balls { get; } = new ObservableCollection<ModelIBall>();
-
-        public RelayCommand RemoveBallsCommand { get; }
-
-        // Remove all balls method
-        private void RemoveBalls()
+        private void GenerateFromCommand()
         {
-            Balls.Clear();
-        }
-
-        // Check if removal is allowed
-        private bool CanRemoveBalls()
-        {
-            return Balls.Any();
+            Balls.Clear(); 
+            Start(BallCount);
         }
 
         #endregion public API

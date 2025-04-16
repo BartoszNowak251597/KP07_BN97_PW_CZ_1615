@@ -19,7 +19,7 @@
                 <RowDefinition Height="*"/>
             </Grid.RowDefinitions>
 
-            <Border Grid.Row="1" BorderThickness="4" BorderBrush="Green" Height="420" Width="400" Padding="0" Margin="0">
+            <Border Grid.Row="1" x:Name="TableBorder" BorderThickness="4" BorderBrush="Green" Height="420" Width="400" Padding="0" Margin="0">
                 <ItemsControl ItemsSource="{Binding Balls}">
                     <ItemsControl.ItemsPanel>
                         <ItemsPanelTemplate>
@@ -41,10 +41,8 @@
             </Border>
 
             <StackPanel Grid.Row="0" Orientation="Horizontal" Margin="10,10,10,10">
-                <TextBox x:Name="txtNumberOfBalls" Width="100" Margin="5" />
-                <Button Content="Generate Balls" Width="120" Margin="5" Click="GenerateBalls_Click" />
-                <Button Content="Remove All Balls" Width="120" Margin="5"
-                        Command="{Binding RemoveBallsCommand}" />
+                <TextBox Width="50" Text="{Binding BallCount, UpdateSourceTrigger=PropertyChanged}" Margin="0,0,10,0"/>
+                <Button Content="Generate Balls" Command="{Binding GenerateCommand}" />
             </StackPanel>
         </Grid>
     </Viewbox>

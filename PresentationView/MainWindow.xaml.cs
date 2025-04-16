@@ -15,25 +15,21 @@ public partial class MainWindow : Window
 {
     public MainWindow()
     {
-        Random random = new Random();
         InitializeComponent();
-        MainWindowViewModel viewModel = (MainWindowViewModel)DataContext;
-        double screenWidth = SystemParameters.PrimaryScreenWidth;
-        double screenHeight = SystemParameters.PrimaryScreenHeight;
-        //viewModel.Start(random.Next(5, 10));
+        this.Loaded += MainWindow_Loaded;
     }
 
-    private void GenerateBalls_Click(object sender, RoutedEventArgs e)
+    private void MainWindow_Loaded(object sender, RoutedEventArgs e)
     {
-        if (DataContext is MainWindowViewModel viewModel &&
-            int.TryParse(txtNumberOfBalls.Text, out int numberOfBalls))
+        double tableWidth = TableBorder.ActualWidth;
+        double tableHeight = TableBorder.ActualHeight;
+        double diameter = 50.0;
+
+        if (DataContext is MainWindowViewModel vm)
         {
-            viewModel.Start(numberOfBalls);
+            vm.InitializeTableSettings(tableWidth, tableHeight, diameter);
         }
-        else
-        {
-            MessageBox.Show("Please enter a valid number.");
-        }
+
     }
 
     /// <summary>

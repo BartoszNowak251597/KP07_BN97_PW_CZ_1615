@@ -1,7 +1,8 @@
-﻿using System;
-using System.Diagnostics;
-using System.Reactive;
-using System.Reactive.Linq;
+﻿using System; 
+using System.ComponentModel; 
+using System.Diagnostics; 
+using System.Reactive; 
+using System.Reactive.Linq; 
 using System.Reflection;
 using UnderneathLayerAPI = Logic.LogicAbstractAPI;
 
@@ -20,6 +21,11 @@ namespace Presentation.Model
 
         #region ModelAbstractApi
 
+        public override void SetTableSettings(double width, double height, double diameter)
+        {
+            this.diameter = diameter;
+            layerBellow.SetLogicParameters(width, height, diameter);
+        }
         public override void Dispose()
         {
             if (Disposed)
@@ -51,6 +57,7 @@ namespace Presentation.Model
         private bool Disposed = false;
         private readonly IObservable<EventPattern<BallChaneEventArgs>> eventObservable = null;
         private readonly UnderneathLayerAPI layerBellow = null;
+        private double diameter;
 
         private void StartHandler(Logic.IPosition position, Logic.IBall ball)
         {

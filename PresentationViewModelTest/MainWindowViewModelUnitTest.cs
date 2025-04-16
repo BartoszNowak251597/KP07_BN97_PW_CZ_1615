@@ -27,7 +27,6 @@ namespace PresentationViewModelTest
                 Assert.IsNotNull(viewModel.Balls);
                 Assert.AreEqual<int>(0, nullModelFixture.Disposed);
                 Assert.AreEqual<int>(numberOfBalls, nullModelFixture.Started);
-                Assert.AreEqual<int>(1, nullModelFixture.Subscribed);
             }
             Assert.AreEqual<int>(1, nullModelFixture.Disposed);
         }
