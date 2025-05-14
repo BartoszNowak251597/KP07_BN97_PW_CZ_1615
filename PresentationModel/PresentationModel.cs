@@ -21,10 +21,9 @@ namespace Presentation.Model
 
         #region ModelAbstractApi
 
-        public override void SetTableSettings(double width, double height, double diameter)
+        public override void SetTableSettings(double width, double height)
         {
-            this.diameter = diameter;
-            layerBellow.SetLogicParameters(width, height, diameter);
+            layerBellow.SetLogicParameters(width, height);
         }
         public override void Dispose()
         {
@@ -61,7 +60,7 @@ namespace Presentation.Model
 
         private void StartHandler(Logic.IPosition position, Logic.IBall ball)
         {
-            ModelBall newBall = new ModelBall(position.x, position.y, ball) { Diameter = 20.0 };
+            ModelBall newBall = new ModelBall(position.x, position.y, ball) { Diameter = ball.Radius*2 };
             BallChanged.Invoke(this, new BallChaneEventArgs() { Ball = newBall });
         }
 

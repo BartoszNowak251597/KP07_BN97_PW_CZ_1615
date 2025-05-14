@@ -19,11 +19,10 @@ namespace Logic
 
         #region LogicAbstractAPI
 
-        public override void SetLogicParameters(double width, double height, double diameter)
+        public override void SetLogicParameters(double width, double height)
         {
             this.tableWidth = width;
             this.tableHeight = height;
-            this.diameter = diameter;
         }
 
         public override void Dispose()
@@ -45,7 +44,7 @@ namespace Logic
 
             layerBellow.Start(numberOfBalls, (startingPosition, dataBall) =>
             {
-                var logicBall = new Ball(dataBall.Id, startingPosition, dataBall.Velocity, layerBellow, tableWidth, tableHeight, diameter, 10);
+                var logicBall = new Ball(dataBall.Id, startingPosition, dataBall.Velocity, layerBellow, tableWidth, tableHeight, dataBall.Diameter, dataBall.Weight);
                 logicBalls.Add(logicBall);
                 dataBall.NewPositionNotification += (s, pos) =>
                 {

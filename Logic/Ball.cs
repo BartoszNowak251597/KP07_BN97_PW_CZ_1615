@@ -27,15 +27,15 @@ namespace Logic
 
         public event EventHandler<IPosition>? NewPositionNotification;
 
-        public void OnNewPosition(Data.IVector dataPos)
+        public void OnNewPosition(IVector dataPos)
         {
             position = new Position(dataPos.x, dataPos.y);
             position = position.UpdatePosition(velocityX, velocityY, width, height, diameter, out velocityX, out velocityY);
             NewPositionNotification?.Invoke(this, position);
 
             dataLayer.UpdateBall(ballId,
-                new Data.Vector(position.x, position.y),
-                new Data.Vector(velocityX, velocityY));
+                new Vector(position.x, position.y),
+                new Vector(velocityX, velocityY));
         }
 
         public void ForceMove(double dx, double dy)
@@ -51,13 +51,15 @@ namespace Logic
 
         public double Mass => mass;
 
+        public Guid Id => ballId;
+
         public void UpdateFromCollision(double newVelX, double newVelY)
         {
             velocityX = newVelX;
             velocityY = newVelY;
             dataLayer.UpdateBall(ballId,
-                new Data.Vector(position.x, position.y),
-                new Data.Vector(velocityX, velocityY));
+                new Vector(position.x, position.y),
+                new Vector(velocityX, velocityY));
         }
     }
 }

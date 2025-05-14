@@ -37,6 +37,6 @@ namespace Presentation.Model
 
         #endregion private
 
-        public virtual void SetTableSettings(double width, double height, double diameter) { }
+        public virtual void SetTableSettings(double width, double height) { }
     }
 }

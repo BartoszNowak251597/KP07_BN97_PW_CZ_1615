@@ -13,7 +13,7 @@
 
         #region Layer API
 
-        public abstract void SetLogicParameters(double width, double height, double diameter);
+        public abstract void SetLogicParameters(double width, double height);
 
         public abstract void Start(int numberOfBalls, Action<IPosition, IBall> upperLayerHandler);
 
@@ -42,5 +42,9 @@
     public interface IBall
     {
         event EventHandler<IPosition> NewPositionNotification;
+        Guid Id { get; }
+        double Radius { get; }
+        double Mass { get; }
+
     }
 }

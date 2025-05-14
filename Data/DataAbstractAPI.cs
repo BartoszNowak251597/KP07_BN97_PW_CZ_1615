@@ -42,6 +42,8 @@ namespace Data
         event EventHandler<IVector> NewPositionNotification;
         Guid Id { get; }
         IVector Velocity { get; set; }
+        double Diameter { get; }
+        double Weight { get; }
         void UpdateFromLogic(IVector newPosition, IVector newVelocity);
     }
 }

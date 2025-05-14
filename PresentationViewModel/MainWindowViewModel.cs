@@ -22,9 +22,9 @@ namespace Presentation.ViewModel
             Observer = ModelLayer.Subscribe<ModelIBall>(x => Balls.Add(x));
             GenerateCommand = new RelayCommand(GenerateFromCommand);
         }
-        public void InitializeTableSettings(double width, double height, double diameter)
+        public void InitializeTableSettings(double width, double height)
         {
-            ModelLayer.SetTableSettings(width, height, diameter);
+            ModelLayer.SetTableSettings(width, height);
         }
         #endregion ctor
 
