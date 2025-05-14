@@ -45,7 +45,7 @@ namespace Logic
 
             layerBellow.Start(numberOfBalls, (startingPosition, dataBall) =>
             {
-                var logicBall = new Ball(dataBall.Id, startingPosition, dataBall.Velocity, layerBellow, tableWidth, tableHeight, diameter);
+                var logicBall = new Ball(dataBall.Id, startingPosition, dataBall.Velocity, layerBellow, tableWidth, tableHeight, diameter, 10);
                 logicBalls.Add(logicBall);
                 dataBall.NewPositionNotification += (s, pos) =>
                 {
@@ -113,8 +113,8 @@ namespace Logic
             double va = a.VelocityX * nx + a.VelocityY * ny;
             double vb = b.VelocityX * nx + b.VelocityY * ny;
 
-            double massA = a.Radius;
-            double massB = b.Radius;
+            double massA = a.Mass;
+            double massB = b.Mass;
 
             // Nowe prędkości względem normalnej
             double newVa = ((massA - massB) * va + 2 * massB * vb) / (massA + massB);

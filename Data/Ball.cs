@@ -4,10 +4,12 @@
     {
         #region ctor
         public Guid Id { get; } = Guid.NewGuid();
-        internal Ball(Vector initialPosition, Vector initialVelocity)
+        internal Ball(Vector initialPosition, Vector initialVelocity, double diameter, double weight)
         {
             Position = initialPosition;
             Velocity = initialVelocity;
+            Diameter = diameter;
+            Weight = weight;
         }
 
         #endregion ctor
@@ -17,9 +19,10 @@
         public event EventHandler<IVector>? NewPositionNotification;
 
         public IVector Velocity { get; set; }
+        public double Diameter { get; }
+        public double Weight { get; }
         public IVector CurrentPosition => Position;
 
-        public double Radius { get; } = 10;
         public void UpdateFromLogic(IVector newPosition, IVector newVelocity)
         {
             Position = new Vector(newPosition.x, newPosition.y);
@@ -32,6 +35,8 @@
         #region private
 
         private Vector Position;
+       
+        
 
         private void RaiseNewPositionChangeNotification()
         {

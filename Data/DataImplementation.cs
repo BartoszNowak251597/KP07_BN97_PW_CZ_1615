@@ -27,7 +27,9 @@ namespace Data
             {
                 Vector startingPosition = new(random.Next(100, 300), random.Next(100, 300));
                 var initialVel = new Vector((random.NextDouble() - 0.5) * 2, (random.NextDouble() - 0.5) * 2);
-                Ball newBall = new(startingPosition, initialVel);
+                double diameter = 20;
+                double weight = 10;
+                Ball newBall = new(startingPosition, initialVel, diameter, weight);
                 upperLayerHandler(startingPosition, newBall);
                 BallsList.Add(newBall);
             }

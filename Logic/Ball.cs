@@ -10,8 +10,9 @@ namespace Logic
         private readonly DataAbstractAPI dataLayer;
         private Position position;
         private double velocityX, velocityY;
+        private double mass;
 
-        public Ball(Guid id, IVector initialPosition, IVector initialVelocity, DataAbstractAPI dataAPI, double tableWidth, double tableHeight, double ballDiameter)
+        public Ball(Guid id, IVector initialPosition, IVector initialVelocity, DataAbstractAPI dataAPI, double tableWidth, double tableHeight, double ballDiameter, double weight)
         {
             ballId = id;
             position = new Position(initialPosition.x, initialPosition.y);
@@ -21,6 +22,7 @@ namespace Logic
             diameter = ballDiameter;
             velocityX = initialVelocity.x;
             velocityY = initialVelocity.y;
+            mass = weight;
         }
 
         public event EventHandler<IPosition>? NewPositionNotification;
@@ -46,6 +48,8 @@ namespace Logic
         public double Radius => diameter / 2;
         public double VelocityX => velocityX;
         public double VelocityY => velocityY;
+
+        public double Mass => mass;
 
         public void UpdateFromCollision(double newVelX, double newVelY)
         {
