@@ -6,38 +6,45 @@ namespace Logic
 {
     internal class Ball : IBall
     {
-        private double width;
-        private double height;
-        private double diameter;
+        private readonly double width;
+        private readonly double height;
+        private readonly double diameter;
 
+        private readonly Data.IBall dataBall;
         private Position position;
         private double velocityX;
         private double velocityY;
-        private readonly Timers.Timer movementTimer;
 
         public Ball(Data.IBall ball, double tableWidth, double tableHeight, double ballDiameter)
         {
+            // U¿ycie prêdkoœci z warstwy data
+            dataBall = ball;
             width = tableWidth;
             height = tableHeight;
             diameter = ballDiameter;
 
-            // Start position and random velocity
-            Random rand = new Random();
-            velocityX = (rand.NextDouble()) * 4;
-            velocityY = (rand.NextDouble()) * 4;
+            // Inicjalizacja prêdkoœci zaczytu z Data.IBall.Velocity
+            velocityX = dataBall.Velocity.x;
+            velocityY = dataBall.Velocity.y;
 
-            ball.NewPositionNotification += RaisePositionChangeEvent;
-
+            // Subskrypcja pozycji
+            dataBall.NewPositionNotification += RaisePositionChangeEvent;
         }
 
         public event EventHandler<IPosition>? NewPositionNotification;
 
-       
+
 
         private void RaisePositionChangeEvent(object? sender, Data.IVector e)
         {
-            var position = new Position(e.x, e.y);
-            position = position.UpdatePosition(velocityX, velocityY, width, height, diameter, out velocityX, out velocityY);
+            // Aktualizacja pozycji na bazie wektora pozycji otrzymanego z Data
+            position = new Position(e.x, e.y);
+
+            // Obliczenie nowej pozycji z uwzglêdnieniem prêdkoœci
+            position = position.UpdatePosition(velocityX, velocityY,
+                                              width, height, diameter,
+                                              out velocityX, out velocityY);
+            // Powiadomienie warstwy prezentacji
             NewPositionNotification?.Invoke(this, position);
         }
     }

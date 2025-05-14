@@ -26,8 +26,8 @@ namespace Data
             for (int i = 0; i < numberOfBalls; i++)
             {
                 Vector startingPosition = new(random.Next(100, 300), random.Next(100, 300));
-                //Vector velocity = new(random.Next(-3, 4), random.Next(-3, 4));
-                Ball newBall = new(startingPosition, startingPosition);
+                var initialVel = new Vector((random.NextDouble() - 0.5) * 100, (random.NextDouble() - 0.5) * 100);
+                Ball newBall = new(startingPosition, initialVel);
                 upperLayerHandler(startingPosition, newBall);
                 BallsList.Add(newBall);
             }
@@ -70,12 +70,12 @@ namespace Data
         private List<Ball> BallsList = [];
         private void Move(object? x)
         {
+            const double dt = 0.01; // 10ms
             foreach (Ball item in BallsList)
             {
-                double dx = (RandomGenerator.NextDouble() - 0.5) * 2;
-                double dy = (RandomGenerator.NextDouble() - 0.5) * 2;
-
-                item.Move(new Vector(dx, dy));
+                // Przesuwamy wed³ug wektora prêdkoœci
+                var delta = new Vector(item.Velocity.x * dt, item.Velocity.y * dt);
+                item.Move(delta);
             }
         }
 
