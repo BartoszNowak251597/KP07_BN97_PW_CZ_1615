@@ -1,44 +1,79 @@
-﻿namespace Logic.Test
+﻿using Data;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
+using System;
+using System.Threading.Tasks;
+
+namespace Logic.Test
 {
     [TestClass]
     public class BallUnitTest
     {
         [TestMethod]
-        public void MoveTestMethod()
+        public async Task MoveTestMethod()
         {
+            // Arrange
             DataBallFixture dataBallFixture = new DataBallFixture();
-            Ball newInstance = new(dataBallFixture, 100.0, 200.0, 10.0);
+            Guid ballId = Guid.NewGuid();
+
+            Ball newInstance = new Ball(
+                ballId,
+                new VectorFixture(0.0, 0.0), // Initial position
+                new VectorFixture(1.0, 1.0), // Initial velocity
+                dataBallFixture,
+                100.0, // Table width
+                200.0, // Table height
+                10.0,  // Diameter
+                10.0   // Mass
+            );
+
             int numberOfCallBackCalled = 0;
-            newInstance.NewPositionNotification += (sender, position) => { Assert.IsNotNull(sender); Assert.IsNotNull(position); numberOfCallBackCalled++; };
-            dataBallFixture.Move();
-            Assert.AreEqual<int>(1, numberOfCallBackCalled);
+
+            newInstance.NewPositionNotification += (sender, position) =>
+            {
+                Assert.IsNotNull(sender);
+                Assert.IsNotNull(position);
+                numberOfCallBackCalled++;
+            };
+
+            // Act
+            newInstance.OnNewPosition(new VectorFixture(0.0, 0.0));
+
+            // Assert
+            Assert.AreEqual(1, numberOfCallBackCalled);
         }
 
-        #region testing instrumentation
+        #region Fixtures
 
-        private class DataBallFixture : Data.IBall
+        private class DataBallFixture : DataAbstractAPI
         {
-            public Data.IVector Velocity { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
-
-            public event EventHandler<Data.IVector>? NewPositionNotification;
-
-            internal void Move()
+            public override void Dispose()
             {
-                NewPositionNotification?.Invoke(this, new VectorFixture(0.0, 0.0));
+                throw new NotImplementedException();
+            }
+
+            public override void Start(int numberOfBalls, Action<IVector, Data.IBall> upperLayerHandler)
+            {
+                throw new NotImplementedException();
+            }
+
+            public override void UpdateBall(Guid id, IVector position, IVector velocity)
+            {
+                // No-op mock
             }
         }
 
-        private class VectorFixture : Data.IVector
+        private class VectorFixture : IVector
         {
-            internal VectorFixture(double X, double Y)
+            public VectorFixture(double x, double y)
             {
-                x = X; y = Y;
+                this.x = x;
+                this.y = y;
             }
 
             public double x { get; init; }
             public double y { get; init; }
         }
 
-        #endregion testing instrumentation
+        #endregion
     }
 }

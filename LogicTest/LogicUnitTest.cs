@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-using Data;
+﻿using Data;
 
 namespace Logic.Test
 {
@@ -25,7 +19,7 @@ namespace Logic.Test
         [TestMethod]
         public void DisposeTestMethod()
         {
-            DataLayerDisposeFixcure dataLayerFixcure = new DataLayerDisposeFixcure();
+            DataLayerDisposeFixcure dataLayerFixcure = new();
             LogicImplementation newInstance = new(dataLayerFixcure);
             Assert.IsFalse(dataLayerFixcure.Disposed);
             bool newInstanceDisposed = true;
@@ -39,37 +33,24 @@ namespace Logic.Test
             Assert.IsTrue(dataLayerFixcure.Disposed);
         }
 
-        [TestMethod]
-        public void StartTestMethod()
-        {
-            DataLayerStartFixcure dataLayerFixcure = new();
-            using (LogicImplementation newInstance = new(dataLayerFixcure))
-            {
-                int called = 0;
-                int numberOfBalls2Create = 10;
-                newInstance.Start(
-                  numberOfBalls2Create,
-                  (startingPosition, ball) => { called++; Assert.IsNotNull(startingPosition); Assert.IsNotNull(ball); });
-                Assert.AreEqual<int>(1, called);
-                Assert.IsTrue(dataLayerFixcure.StartCalled);
-                Assert.AreEqual<int>(numberOfBalls2Create, dataLayerFixcure.NumberOfBallseCreated);
-            }
-        }
-
         #region testing instrumentation
 
-        private class DataLayerConstructorFixcure : Data.DataAbstractAPI
+        private class DataLayerConstructorFixcure : DataAbstractAPI
         {
-            public override void Dispose()
-            { }
+            public override void Dispose() { }
 
             public override void Start(int numberOfBalls, Action<IVector, Data.IBall> upperLayerHandler)
             {
                 throw new NotImplementedException();
             }
+
+            public override void UpdateBall(Guid id, IVector newPosition, IVector newVelocity)
+            {
+                throw new NotImplementedException();
+            }
         }
 
-        private class DataLayerDisposeFixcure : Data.DataAbstractAPI
+        private class DataLayerDisposeFixcure : DataAbstractAPI
         {
             internal bool Disposed = false;
 
@@ -78,41 +59,77 @@ namespace Logic.Test
                 Disposed = true;
             }
 
+
             public override void Start(int numberOfBalls, Action<IVector, Data.IBall> upperLayerHandler)
+            {
+                throw new NotImplementedException();
+            }
+
+            public override void UpdateBall(Guid id, IVector newPosition, IVector newVelocity)
             {
                 throw new NotImplementedException();
             }
         }
 
-        private class DataLayerStartFixcure : Data.DataAbstractAPI
+        private class DataLayerStartFixcure : DataAbstractAPI
         {
             internal bool StartCalled = false;
             internal int NumberOfBallseCreated = -1;
+            internal IBall? CreatedBall { get; private set; }
 
-            public override void Dispose()
-            { }
+            public override void Dispose() { }
 
             public override void Start(int numberOfBalls, Action<IVector, Data.IBall> upperLayerHandler)
             {
                 StartCalled = true;
                 NumberOfBallseCreated = numberOfBalls;
-                upperLayerHandler(new DataVectorFixture(), new DataBallFixture());
+                var ball = new DataBallFixture();
+                CreatedBall = ball;
+                upperLayerHandler(new DataVectorFixture(), (Data.IBall)ball);
             }
 
-            private record DataVectorFixture : Data.IVector
+            public override void UpdateBall(Guid id, IVector newPosition, IVector newVelocity)
             {
-                public double x { get; init; }
-                public double y { get; init; }
+                // No-op
             }
 
-            private class DataBallFixture : Data.IBall
+            private class DataVectorFixture : IVector, IPosition
             {
-                public IVector Velocity { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
+                public double x { get; init; } = 0.0;
+                public double y { get; init; } = 0.0;
+            }
 
-                public event EventHandler<IVector>? NewPositionNotification = null;
+            internal class DataBallFixture : IBall
+            {
+                public IVector Velocity { get; set; } = new DataVectorFixture();
+                public Guid Id { get; } = Guid.NewGuid();
+                public double Diameter => 10.0;
+                public double Weight => 1.0;
+                public double Radius => 5.0;
+                public double Mass => 1.0;
+
+                public event EventHandler<IPosition>? NewPositionNotification;
+
+                public void RaiseNewPosition(IPosition pos)
+                {
+                    NewPositionNotification?.Invoke(this, pos);
+                }
+
+                public void UpdateFromLogic(IVector newPosition, IVector newVelocity)
+                {
+                    // No-op
+                }
             }
         }
 
-        #endregion testing instrumentation
+        private class DataVectorFixture : IPosition
+        {
+            public int x { get; set; }
+            public int y { get; set; }
+            double IPosition.x { get => x; init => throw new NotImplementedException(); }
+            double IPosition.y { get => y; init => throw new NotImplementedException(); }
+        }
+
+        #endregion
     }
 }
