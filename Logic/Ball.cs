@@ -1,6 +1,5 @@
 using Data;
 using System;
-using Timers = System.Timers;
 
 namespace Logic
 {
@@ -12,12 +11,13 @@ namespace Logic
         private Position position;
         private double velocityX, velocityY;
 
-        public Ball(Guid id, IVector initialVelocity, DataAbstractAPI dataAPI, double tableWidth, double tableHeight, double ballDiameter)
+        public Ball(Guid id, IVector initialPosition, IVector initialVelocity, DataAbstractAPI dataAPI, double tableWidth, double tableHeight, double ballDiameter)
         {
             ballId = id;
+            position = new Position(initialPosition.x, initialPosition.y);
             dataLayer = dataAPI;
-            width = tableWidth;
-            height = tableHeight;
+            width = tableWidth-7;
+            height = tableHeight-7;
             diameter = ballDiameter;
             velocityX = initialVelocity.x;
             velocityY = initialVelocity.y;
@@ -35,6 +35,25 @@ namespace Logic
                 new Data.Vector(position.x, position.y),
                 new Data.Vector(velocityX, velocityY));
         }
-    }
 
+        public void ForceMove(double dx, double dy)
+        {
+            position = new Position(position.x + dx, position.y + dy);
+        }
+
+
+        public Position Position => position;
+        public double Radius => diameter / 2;
+        public double VelocityX => velocityX;
+        public double VelocityY => velocityY;
+
+        public void UpdateFromCollision(double newVelX, double newVelY)
+        {
+            velocityX = newVelX;
+            velocityY = newVelY;
+            dataLayer.UpdateBall(ballId,
+                new Data.Vector(position.x, position.y),
+                new Data.Vector(velocityX, velocityY));
+        }
+    }
 }

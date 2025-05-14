@@ -23,7 +23,7 @@ public partial class MainWindow : Window
     {
         double tableWidth = TableBorder.ActualWidth;
         double tableHeight = TableBorder.ActualHeight;
-        double diameter = 50.0;
+        double diameter = 20.0;
 
         if (DataContext is MainWindowViewModel vm)
         {

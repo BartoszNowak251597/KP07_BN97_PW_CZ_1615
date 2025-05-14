@@ -40,10 +40,18 @@ namespace Logic
                 throw new ObjectDisposedException(nameof(LogicImplementation));
             if (upperLayerHandler == null)
                 throw new ArgumentNullException(nameof(upperLayerHandler));
+
+            var logicBalls = new List<Ball>();
+
             layerBellow.Start(numberOfBalls, (startingPosition, dataBall) =>
             {
-                var logicBall = new Ball(dataBall.Id, dataBall.Velocity, layerBellow, tableWidth, tableHeight, diameter);
-                dataBall.NewPositionNotification += (s, pos) => logicBall.OnNewPosition(pos);
+                var logicBall = new Ball(dataBall.Id, startingPosition, dataBall.Velocity, layerBellow, tableWidth, tableHeight, diameter);
+                logicBalls.Add(logicBall);
+                dataBall.NewPositionNotification += (s, pos) =>
+                {
+                    logicBall.OnNewPosition(pos);
+                    CheckCollisions(logicBall, logicBalls);
+                };
                 upperLayerHandler(new Position(startingPosition.x, startingPosition.y), logicBall);
             });
         }
@@ -58,6 +66,74 @@ namespace Logic
         private double tableWidth;
         private double tableHeight;
         private double diameter;
+
+        private void CheckCollisions(Ball currentBall, List<Ball> allBalls)
+        {
+            foreach (var otherBall in allBalls)
+            {
+                if (currentBall == otherBall) continue;
+
+                double dx = otherBall.Position.x - currentBall.Position.x;
+                double dy = otherBall.Position.y - currentBall.Position.y;
+                double distanceSquared = dx * dx + dy * dy;
+                double radiusSum = currentBall.Radius + otherBall.Radius;
+
+                if (distanceSquared <= radiusSum * radiusSum)
+                {
+                    ResolveElasticCollision(currentBall, otherBall);
+                }
+            }
+        }
+
+        private void ResolveElasticCollision(Ball a, Ball b)
+        {
+            double dx = b.Position.x - a.Position.x;
+            double dy = b.Position.y - a.Position.y;
+            double distance = Math.Sqrt(dx * dx + dy * dy);
+            if (distance == 0) return;
+
+            // Unormowany wektor kierunku
+            double nx = dx / distance;
+            double ny = dy / distance;
+
+            // Odsunięcie kul, żeby nie były w sobie
+            double overlap = (a.Radius + b.Radius) - distance;
+            if (overlap > 0)
+            {
+                // Przesuwamy po połowie na każdą kulę
+                double correctionX = nx * overlap / 2;
+                double correctionY = ny * overlap / 2;
+
+                // Korekta pozycji
+                a.ForceMove(-correctionX, -correctionY);
+                b.ForceMove(correctionX, correctionY);
+            }
+
+            // Prędkości względem normalnej
+            double va = a.VelocityX * nx + a.VelocityY * ny;
+            double vb = b.VelocityX * nx + b.VelocityY * ny;
+
+            double massA = a.Radius;
+            double massB = b.Radius;
+
+            // Nowe prędkości względem normalnej
+            double newVa = ((massA - massB) * va + 2 * massB * vb) / (massA + massB);
+            double newVb = ((massB - massA) * vb + 2 * massA * va) / (massA + massB);
+
+            double changeVa = newVa - va;
+            double changeVb = newVb - vb;
+
+            // Aktualizacja prędkości
+            double newVelXA = a.VelocityX + changeVa * nx;
+            double newVelYA = a.VelocityY + changeVa * ny;
+            double newVelXB = b.VelocityX + changeVb * nx;
+            double newVelYB = b.VelocityY + changeVb * ny;
+
+            a.UpdateFromCollision(newVelXA, newVelYA);
+            b.UpdateFromCollision(newVelXB, newVelYB);
+        }
+
+
 
         #endregion private
 
