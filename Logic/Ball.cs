@@ -11,6 +11,7 @@ namespace Logic
         private Position position;
         private double velocityX, velocityY;
         private double mass;
+        private readonly object ballLock = new();
 
         public Ball(Guid id, IVector initialPosition, IVector initialVelocity, DataAbstractAPI dataAPI, double tableWidth, double tableHeight, double ballDiameter, double weight)
         {
@@ -27,27 +28,53 @@ namespace Logic
 
         public event EventHandler<IPosition>? NewPositionNotification;
 
-        public void OnNewPosition(IVector dataPos)
+        public async void OnNewPosition(IVector dataPos)
         {
             position = new Position(dataPos.x, dataPos.y);
             position = position.UpdatePosition(velocityX, velocityY, width, height, diameter, out velocityX, out velocityY);
-            NewPositionNotification?.Invoke(this, position);
 
-            dataLayer.UpdateBall(ballId,
-                new Vector(position.x, position.y),
-                new Vector(velocityX, velocityY));
+            if (NewPositionNotification != null)
+            {
+                var handlers = NewPositionNotification.GetInvocationList();
+                foreach (EventHandler<IPosition> handler in handlers)
+                {
+                    await Task.Run(() => handler(this, position));
+                }
+            }
+
+            await Task.Run(() =>
+            {
+                dataLayer.UpdateBall(ballId,
+                    new Vector(position.x, position.y),
+                    new Vector(velocityX, velocityY));
+            });
         }
 
         public void ForceMove(double dx, double dy)
         {
-            position = new Position(position.x + dx, position.y + dy);
+            lock (ballLock)
+            {
+                position = new Position(position.x + dx, position.y + dy);
+            }
         }
 
 
-        public Position Position => position;
+        public Position Position
+        {
+            get { lock (ballLock) { return position; } }
+        }
+        
         public double Radius => diameter / 2;
-        public double VelocityX => velocityX;
-        public double VelocityY => velocityY;
+        public double VelocityX
+        {
+            get { lock (ballLock) { return velocityX; } }
+        }
+
+        public double VelocityY
+        {
+            get { lock (ballLock) { return velocityY; } }
+        }
+
 
         public double Mass => mass;
 

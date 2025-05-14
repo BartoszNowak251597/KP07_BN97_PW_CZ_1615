@@ -45,11 +45,14 @@ namespace Logic
             layerBellow.Start(numberOfBalls, (startingPosition, dataBall) =>
             {
                 var logicBall = new Ball(dataBall.Id, startingPosition, dataBall.Velocity, layerBellow, tableWidth, tableHeight, dataBall.Diameter, dataBall.Weight);
-                logicBalls.Add(logicBall);
-                dataBall.NewPositionNotification += (s, pos) =>
+                lock (logicBallsLock)
                 {
-                    logicBall.OnNewPosition(pos);
-                    CheckCollisions(logicBall, logicBalls);
+                    logicBalls.Add(logicBall);
+                }
+                dataBall.NewPositionNotification += async (s, pos) =>
+                {
+                    logicBall.OnNewPosition(pos); // teraz async
+                    await Task.Run(() => CheckCollisions(logicBall, logicBalls));
                 };
                 upperLayerHandler(new Position(startingPosition.x, startingPosition.y), logicBall);
             });
@@ -64,7 +67,8 @@ namespace Logic
         private readonly UnderneathLayerAPI layerBellow;
         private double tableWidth;
         private double tableHeight;
-        private double diameter;
+        private readonly object logicBallsLock = new();
+        public object BallLock { get; } = new();
 
         private void CheckCollisions(Ball currentBall, List<Ball> allBalls)
         {
@@ -72,17 +76,28 @@ namespace Logic
             {
                 if (currentBall == otherBall) continue;
 
-                double dx = otherBall.Position.x - currentBall.Position.x;
-                double dy = otherBall.Position.y - currentBall.Position.y;
-                double distanceSquared = dx * dx + dy * dy;
-                double radiusSum = currentBall.Radius + otherBall.Radius;
+                var (firstLock, secondLock) = currentBall.Id.CompareTo(otherBall.Id) < 0
+                    ? (currentBall, otherBall)
+                    : (otherBall, currentBall);
 
-                if (distanceSquared <= radiusSum * radiusSum)
+                lock (firstLock)
                 {
-                    ResolveElasticCollision(currentBall, otherBall);
+                    lock (secondLock)
+                    {
+                        double dx = otherBall.Position.x - currentBall.Position.x;
+                        double dy = otherBall.Position.y - currentBall.Position.y;
+                        double distanceSquared = dx * dx + dy * dy;
+                        double radiusSum = currentBall.Radius + otherBall.Radius;
+
+                        if (distanceSquared <= radiusSum * radiusSum)
+                        {
+                            ResolveElasticCollision(currentBall, otherBall);
+                        }
+                    }
                 }
             }
         }
+
 
         private void ResolveElasticCollision(Ball a, Ball b)
         {

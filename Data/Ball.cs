@@ -4,7 +4,7 @@
     {
         #region ctor
         public Guid Id { get; } = Guid.NewGuid();
-        internal Ball(Vector initialPosition, Vector initialVelocity, double diameter, double weight)
+        internal Ball(Vector initialPosition, Vector initialVelocity, double diameter = 40, double weight = 10)
         {
             Position = initialPosition;
             Velocity = initialVelocity;
@@ -35,18 +35,25 @@
         #region private
 
         private Vector Position;
-       
-        
 
-        private void RaiseNewPositionChangeNotification()
+
+
+        private async Task RaiseNewPositionChangeNotificationAsync()
         {
-            NewPositionNotification?.Invoke(this, Position);
+            if (NewPositionNotification != null)
+            {
+                var handlers = NewPositionNotification.GetInvocationList();
+                foreach (EventHandler<IVector> handler in handlers)
+                {
+                    await Task.Run(() => handler(this, Position));
+                }
+            }
         }
 
-        internal void Move(Vector delta)
+        internal async void Move(Vector delta)
         {
             Position = new Vector(Position.x + delta.x, Position.y + delta.y);
-            RaiseNewPositionChangeNotification();
+            await RaiseNewPositionChangeNotificationAsync();
         }
 
         #endregion private

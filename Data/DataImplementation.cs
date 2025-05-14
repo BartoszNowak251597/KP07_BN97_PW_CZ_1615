@@ -33,15 +33,22 @@ namespace Data
                 double weight = 10;
                 Ball newBall = new(startingPosition, initialVel, diameter, weight);
                 upperLayerHandler(startingPosition, newBall);
-                BallsList.Add(newBall);
+                lock (ballsListLock)
+                {
+                    BallsList.Add(newBall);
+                }
             }
         }
 
         public override void UpdateBall(Guid id, IVector newPosition, IVector newVelocity)
-{
-    var ball = BallsList.FirstOrDefault(b => b.Id == id);
-    ball?.UpdateFromLogic(newPosition, newVelocity);
-}
+        {
+            Ball? ball;
+            lock (ballsListLock)
+            {
+                ball = BallsList.FirstOrDefault(b => b.Id == id);
+            }
+            ball?.UpdateFromLogic(newPosition, newVelocity);
+        }
 
         #endregion DataAbstractAPI
 
@@ -77,17 +84,29 @@ namespace Data
 
         private readonly Timer MoveTimer;
         private Random RandomGenerator = new();
-        private List<Ball> BallsList = [];
-        private void Move(object? x)
+        private readonly List<Ball> BallsList = [];
+        private readonly object ballsListLock = new();
+        private async void Move(object? state)
         {
             const double dt = 0.01; // 10ms
-            foreach (Ball item in BallsList)
+            List<Ball> copy;
+            lock (ballsListLock)
             {
-                // Przesuwamy wed³ug wektora prêdkoœci
-                var delta = new Vector(item.Velocity.x * dt, item.Velocity.y * dt);
-                item.Move(delta);
+                copy = BallsList.ToList(); // twórz kopiê na potrzeby równoleg³ego dostêpu
             }
+
+            var tasks = copy.Select(ball =>
+            {
+                return Task.Run(() =>
+                {
+                    var delta = new Vector(ball.Velocity.x * dt, ball.Velocity.y * dt);
+                    ball.Move(delta);
+                });
+            });
+
+            await Task.WhenAll(tasks);
         }
+
 
         #endregion private
 
