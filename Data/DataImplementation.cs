@@ -26,12 +26,18 @@ namespace Data
             for (int i = 0; i < numberOfBalls; i++)
             {
                 Vector startingPosition = new(random.Next(100, 300), random.Next(100, 300));
-                var initialVel = new Vector((random.NextDouble() - 0.5) * 100, (random.NextDouble() - 0.5) * 100);
+                var initialVel = new Vector((random.NextDouble() - 0.5) * 2, (random.NextDouble() - 0.5) * 2);
                 Ball newBall = new(startingPosition, initialVel);
                 upperLayerHandler(startingPosition, newBall);
                 BallsList.Add(newBall);
             }
         }
+
+        public override void UpdateBall(Guid id, IVector newPosition, IVector newVelocity)
+{
+    var ball = BallsList.FirstOrDefault(b => b.Id == id);
+    ball?.UpdateFromLogic(newPosition, newVelocity);
+}
 
         #endregion DataAbstractAPI
 

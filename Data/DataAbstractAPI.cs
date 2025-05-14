@@ -14,6 +14,7 @@ namespace Data
         #region public API
 
         public abstract void Start(int numberOfBalls, Action<IVector, IBall> upperLayerHandler);
+        public abstract void UpdateBall(Guid id, IVector newPosition, IVector newVelocity);
 
         #endregion public API
 
@@ -39,7 +40,8 @@ namespace Data
     public interface IBall
     {
         event EventHandler<IVector> NewPositionNotification;
-
+        Guid Id { get; }
         IVector Velocity { get; set; }
+        void UpdateFromLogic(IVector newPosition, IVector newVelocity);
     }
 }

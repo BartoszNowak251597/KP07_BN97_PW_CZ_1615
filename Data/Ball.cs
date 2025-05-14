@@ -3,7 +3,7 @@
     internal class Ball : IBall
     {
         #region ctor
-
+        public Guid Id { get; } = Guid.NewGuid();
         internal Ball(Vector initialPosition, Vector initialVelocity)
         {
             Position = initialPosition;
@@ -20,6 +20,12 @@
         public IVector CurrentPosition => Position;
 
         public double Radius { get; } = 10;
+        public void UpdateFromLogic(IVector newPosition, IVector newVelocity)
+        {
+            Position = new Vector(newPosition.x, newPosition.y);
+            Velocity = newVelocity;
+        }
+
 
         #endregion IBall
 

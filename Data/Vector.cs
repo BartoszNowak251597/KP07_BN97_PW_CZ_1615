@@ -1,6 +1,6 @@
 namespace Data
 {
-    internal record Vector : IVector
+    public record Vector : IVector
     {
         #region IVector
 
