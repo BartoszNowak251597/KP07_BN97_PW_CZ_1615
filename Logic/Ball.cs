@@ -11,7 +11,8 @@ namespace Logic
         private Position position;
         private double velocityX, velocityY;
         private double mass;
-        private readonly object ballLock = new();
+        private static readonly object ballLock = new();
+        private static readonly object allLock = new();
 
         public Ball(Guid id, IVector initialPosition, IVector initialVelocity, DataAbstractAPI dataAPI, double tableWidth, double tableHeight, double ballDiameter, double weight)
         {
@@ -30,23 +31,29 @@ namespace Logic
 
         public async void OnNewPosition(IVector dataPos)
         {
-            position = new Position(dataPos.x, dataPos.y);
-            position = position.UpdatePosition(velocityX, velocityY, width, height, diameter, out velocityX, out velocityY);
+            lock (allLock)
+            {
+                position = new Position(dataPos.x, dataPos.y);
+                position = position.UpdatePosition( velocityX, velocityY, width, height, diameter,out velocityX, out velocityY);
+            }
 
             if (NewPositionNotification != null)
             {
                 var handlers = NewPositionNotification.GetInvocationList();
                 foreach (EventHandler<IPosition> handler in handlers)
                 {
-                    await Task.Run(() => handler(this, position));
+                    await Task.Run(() => handler(this, Position));
                 }
             }
 
             await Task.Run(() =>
             {
-                dataLayer.UpdateBall(ballId,
-                    new Vector(position.x, position.y),
-                    new Vector(velocityX, velocityY));
+                lock (ballLock)
+                {
+                    dataLayer.UpdateBall(ballId,
+                        new Vector(position.x, position.y),
+                        new Vector(velocityX, velocityY));
+                }
             });
         }
 
