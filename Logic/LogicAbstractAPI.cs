@@ -13,6 +13,8 @@
 
         #region Layer API
 
+        public virtual void EnableDiagnostics(string filePath) { }
+
         public abstract void SetLogicParameters(double width, double height);
 
         public abstract void Start(int numberOfBalls, Action<IPosition, IBall> upperLayerHandler);

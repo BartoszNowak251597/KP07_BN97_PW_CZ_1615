@@ -10,6 +10,11 @@ namespace Logic
         public LogicImplementation() : this(null)
         { }
 
+        public override void EnableDiagnostics(string filePath)
+        {
+            layerBellow.EnableDiagnostics(filePath);
+        }
+
         internal LogicImplementation(UnderneathLayerAPI? underneathLayer)
         {
             layerBellow = underneathLayer == null ? UnderneathLayerAPI.GetDataLayer() : underneathLayer;
@@ -18,8 +23,6 @@ namespace Logic
         #endregion ctor
 
         #region LogicAbstractAPI
-
-        private static readonly BallLogger logger = new("diagnostics.csv");
 
         public override void SetLogicParameters(double width, double height)
         {
@@ -32,7 +35,6 @@ namespace Logic
             if (Disposed)
                 throw new ObjectDisposedException(nameof(LogicImplementation));
             layerBellow.Dispose();
-            logger.Dispose();
             Disposed = true;
         }
 

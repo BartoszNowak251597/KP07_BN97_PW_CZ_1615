@@ -12,7 +12,6 @@ namespace Logic
         private double velocityX, velocityY;
         private double mass;
         private readonly object lockObj = new();
-        private static BallLogger logger = new("diagnostics.csv");
 
         public Ball(Guid id, IVector initialPosition, IVector initialVelocity, DataAbstractAPI dataAPI, double tableWidth, double tableHeight, double ballDiameter, double weight)
         {
@@ -36,7 +35,6 @@ namespace Logic
                 position = new Position(dataPos.x, dataPos.y);
                 position = position.UpdatePosition( velocityX, velocityY, width, height, diameter,out velocityX, out velocityY);
             }
-            logger.Log(ballId, position.x, position.y, velocityX, velocityY);
 
             if (NewPositionNotification != null)
             {

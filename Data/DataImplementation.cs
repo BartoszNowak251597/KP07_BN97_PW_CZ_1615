@@ -1,5 +1,9 @@
-using System;
+ï»¿using System;
 using System.Diagnostics;
+using System.Linq;
+using System.Collections.Generic;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace Data
 {
@@ -22,17 +26,20 @@ namespace Data
                 throw new ObjectDisposedException(nameof(DataImplementation));
             if (upperLayerHandler == null)
                 throw new ArgumentNullException(nameof(upperLayerHandler));
+
             Random random = new Random();
+
             for (int i = 0; i < numberOfBalls; i++)
             {
                 Vector startingPosition = new(random.Next(100, 300), random.Next(100, 300));
-                var initialVel = new Vector((random.NextDouble() - 0.5) * 2, (random.NextDouble() - 0.5) * 2);
+                Vector initialVelocity = new((random.NextDouble() - 0.5) * 2, (random.NextDouble() - 0.5) * 2);
                 double diameter = random.Next(10, 31);
                 double weight = diameter / 2;
-                //double diameter = 20;
-                //double weight = 10;
-                Ball newBall = new(startingPosition, initialVel, diameter, weight);
+
+                Ball newBall = new(startingPosition, initialVelocity, diameter, weight, logger);
+
                 upperLayerHandler(startingPosition, newBall);
+
                 lock (ballsListLock)
                 {
                     BallsList.Add(newBall);
@@ -50,6 +57,11 @@ namespace Data
             ball?.UpdateFromLogic(newPosition, newVelocity);
         }
 
+        public override void EnableDiagnostics(string filePath)
+        {
+            logger = new BallLogger(filePath);
+        }
+
         #endregion DataAbstractAPI
 
         #region IDisposable
@@ -62,16 +74,18 @@ namespace Data
                 {
                     MoveTimer.Dispose();
                     BallsList.Clear();
+                    logger?.Dispose();
                 }
                 Disposed = true;
             }
             else
+            {
                 throw new ObjectDisposedException(nameof(DataImplementation));
+            }
         }
 
         public override void Dispose()
         {
-            // Do not change this code. Put cleanup code in 'Dispose(bool disposing)' method
             Dispose(disposing: true);
             GC.SuppressFinalize(this);
         }
@@ -81,32 +95,32 @@ namespace Data
         #region private
 
         private bool Disposed = false;
-
         private readonly Timer MoveTimer;
-        private Random RandomGenerator = new();
         private readonly List<Ball> BallsList = [];
         private readonly object ballsListLock = new();
+        private BallLogger? logger;
+
         private async void Move(object? state)
         {
-            const double dt = 0.01; // 10ms
+            const double dt = 0.01; // 10 ms
             List<Ball> copy;
+
             lock (ballsListLock)
             {
-                copy = BallsList.ToList(); // twórz kopiê na potrzeby równoleg³ego dostêpu
+                copy = BallsList.ToList(); // kopia lokalna dla wÄ…tkÃ³w
             }
 
             var tasks = copy.Select(ball =>
             {
                 return Task.Run(() =>
                 {
-                    var delta = new Vector(ball.Velocity.x * dt, ball.Velocity.y * dt);
+                    Vector delta = new(ball.Velocity.x * dt, ball.Velocity.y * dt);
                     ball.Move(delta);
                 });
             });
 
             await Task.WhenAll(tasks);
         }
-
 
         #endregion private
 

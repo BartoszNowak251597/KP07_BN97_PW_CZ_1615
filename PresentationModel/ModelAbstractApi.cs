@@ -17,6 +17,8 @@ namespace Presentation.Model
             return modelInstance.Value;
         }
 
+        public virtual void EnableDiagnostics(string filePath) { }
+
         public abstract void Start(int numberOfBalls);
 
         #region IObservable

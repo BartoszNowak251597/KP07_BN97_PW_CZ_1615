@@ -4,7 +4,7 @@ using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace Logic
+namespace Data
 {
     public class BallLogger : IDisposable
     {
@@ -21,7 +21,7 @@ namespace Logic
 
         public void Log(Guid id, double x, double y, double vx, double vy)
         {
-            string line = $"{DateTime.UtcNow:o};{id};{x:F2};{y:F2};{vx:F2};{vy:F2}";
+            string line = $"{DateTime.Now:o};{id};{x:F2};{y:F2};{vx:F2};{vy:F2}";
             queue.Add(line);
         }
 

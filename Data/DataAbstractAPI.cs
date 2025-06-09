@@ -16,6 +16,9 @@ namespace Data
         public abstract void Start(int numberOfBalls, Action<IVector, IBall> upperLayerHandler);
         public abstract void UpdateBall(Guid id, IVector newPosition, IVector newVelocity);
 
+        public virtual void EnableDiagnostics(string filePath) { }
+
+
         #endregion public API
 
         #region IDisposable

@@ -1,9 +1,9 @@
 ﻿using System;
+using System.IO;
 using System.Windows;
 using System.Collections.ObjectModel;
 using Presentation.Model;
 using Presentation.ViewModel.MVVMLight;
-using Presentation.Model;
 using ModelIBall = Presentation.Model.IBall;
 using System.Windows.Input;
 
@@ -19,13 +19,19 @@ namespace Presentation.ViewModel
         internal MainWindowViewModel(ModelAbstractApi modelLayerAPI)
         {
             ModelLayer = modelLayerAPI == null ? ModelAbstractApi.CreateModel() : modelLayerAPI;
+
+            string logPath = "diagnostics.csv";
+            ModelLayer.EnableDiagnostics(logPath);
+
             Observer = ModelLayer.Subscribe<ModelIBall>(x => Balls.Add(x));
             GenerateCommand = new RelayCommand(GenerateFromCommand);
         }
+
         public void InitializeTableSettings(double width, double height)
         {
             ModelLayer.SetTableSettings(width, height);
         }
+
         #endregion ctor
 
         #region public API
@@ -56,7 +62,7 @@ namespace Presentation.ViewModel
 
         private void GenerateFromCommand()
         {
-            Balls.Clear(); 
+            Balls.Clear();
             Start(BallCount);
         }
 
@@ -75,8 +81,6 @@ namespace Presentation.ViewModel
                     ModelLayer.Dispose();
                 }
 
-                // TODO: free unmanaged resources (unmanaged objects) and override finalizer
-                // TODO: set large fields to null
                 Disposed = true;
             }
         }

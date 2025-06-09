@@ -1,15 +1,23 @@
-﻿namespace Data
+﻿using System;
+using System.Threading.Tasks;
+
+namespace Data
 {
     internal class Ball : IBall
     {
         #region ctor
+
         public Guid Id { get; } = Guid.NewGuid();
-        internal Ball(Vector initialPosition, Vector initialVelocity, double diameter = 40, double weight = 10)
+
+        private readonly BallLogger? logger;
+
+        internal Ball(Vector pos, Vector vel, double diameter, double weight, BallLogger? logger = null)
         {
-            Position = initialPosition;
-            Velocity = initialVelocity;
+            Position = pos;
+            Velocity = vel;
             Diameter = diameter;
             Weight = weight;
+            this.logger = logger;
         }
 
         #endregion ctor
@@ -29,14 +37,11 @@
             Velocity = newVelocity;
         }
 
-
         #endregion IBall
 
         #region private
 
         private Vector Position;
-
-
 
         private async Task RaiseNewPositionChangeNotificationAsync()
         {
@@ -53,6 +58,9 @@
         internal async void Move(Vector delta)
         {
             Position = new Vector(Position.x + delta.x, Position.y + delta.y);
+
+            logger?.Log(Id, Position.x, Position.y, Velocity.x, Velocity.y);
+
             await RaiseNewPositionChangeNotificationAsync();
         }
 

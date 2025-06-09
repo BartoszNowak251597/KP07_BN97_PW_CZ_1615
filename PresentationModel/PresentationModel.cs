@@ -21,6 +21,12 @@ namespace Presentation.Model
 
         #region ModelAbstractApi
 
+        public override void EnableDiagnostics(string filePath)
+        {
+            layerBellow.EnableDiagnostics(filePath);
+        }
+
+
         public override void SetTableSettings(double width, double height)
         {
             layerBellow.SetLogicParameters(width, height);
