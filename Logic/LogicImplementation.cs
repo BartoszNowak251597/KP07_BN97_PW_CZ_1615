@@ -19,6 +19,8 @@ namespace Logic
 
         #region LogicAbstractAPI
 
+        private static readonly BallLogger logger = new("diagnostics.csv");
+
         public override void SetLogicParameters(double width, double height)
         {
             this.tableWidth = width;
@@ -30,6 +32,7 @@ namespace Logic
             if (Disposed)
                 throw new ObjectDisposedException(nameof(LogicImplementation));
             layerBellow.Dispose();
+            logger.Dispose();
             Disposed = true;
         }
 
@@ -51,7 +54,7 @@ namespace Logic
                 }
                 dataBall.NewPositionNotification += async (s, pos) =>
                 {
-                    logicBall.OnNewPosition(pos); // teraz async
+                    logicBall.OnNewPosition(pos);
                     await Task.Run(() => CheckCollisions(logicBall, logicBalls));
                 };
                 upperLayerHandler(new Position(startingPosition.x, startingPosition.y), logicBall);

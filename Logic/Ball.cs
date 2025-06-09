@@ -11,8 +11,8 @@ namespace Logic
         private Position position;
         private double velocityX, velocityY;
         private double mass;
-        private static readonly object ballLock = new();
-        private static readonly object allLock = new();
+        private readonly object lockObj = new();
+        private static BallLogger logger = new("diagnostics.csv");
 
         public Ball(Guid id, IVector initialPosition, IVector initialVelocity, DataAbstractAPI dataAPI, double tableWidth, double tableHeight, double ballDiameter, double weight)
         {
@@ -31,11 +31,12 @@ namespace Logic
 
         public async void OnNewPosition(IVector dataPos)
         {
-            lock (allLock)
+            lock (lockObj)
             {
                 position = new Position(dataPos.x, dataPos.y);
                 position = position.UpdatePosition( velocityX, velocityY, width, height, diameter,out velocityX, out velocityY);
             }
+            logger.Log(ballId, position.x, position.y, velocityX, velocityY);
 
             if (NewPositionNotification != null)
             {
@@ -48,7 +49,7 @@ namespace Logic
 
             await Task.Run(() =>
             {
-                lock (ballLock)
+                lock (lockObj)
                 {
                     dataLayer.UpdateBall(ballId,
                         new Vector(position.x, position.y),
@@ -59,7 +60,7 @@ namespace Logic
 
         public void ForceMove(double dx, double dy)
         {
-            lock (ballLock)
+            lock (lockObj)
             {
                 position = new Position(position.x + dx, position.y + dy);
             }
@@ -68,18 +69,18 @@ namespace Logic
 
         public Position Position
         {
-            get { lock (ballLock) { return position; } }
+            get { lock (lockObj) { return position; } }
         }
         
         public double Radius => diameter / 2;
         public double VelocityX
         {
-            get { lock (ballLock) { return velocityX; } }
+            get { lock (lockObj) { return velocityX; } }
         }
 
         public double VelocityY
         {
-            get { lock (ballLock) { return velocityY; } }
+            get { lock (lockObj) { return velocityY; } }
         }
 
 
