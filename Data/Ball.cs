@@ -1,15 +1,17 @@
 ﻿using System;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace Data
 {
-    internal class Ball : IBall
+    internal class Ball : IBall, IDisposable
     {
         #region ctor
 
         public Guid Id { get; } = Guid.NewGuid();
 
         private readonly BallLogger? logger;
+        private readonly Timer? logTimer;
 
         internal Ball(Vector pos, Vector vel, double diameter, double weight, BallLogger? logger = null)
         {
@@ -18,6 +20,14 @@ namespace Data
             Diameter = diameter;
             Weight = weight;
             this.logger = logger;
+
+            if (logger != null)
+            {
+                logTimer = new Timer(_ =>
+                {
+                    logger.Log(Id, Position.x, Position.y, Velocity.x, Velocity.y);
+                }, null, TimeSpan.Zero, TimeSpan.FromSeconds(1));
+            }
         }
 
         #endregion ctor
@@ -59,11 +69,18 @@ namespace Data
         {
             Position = new Vector(Position.x + delta.x, Position.y + delta.y);
 
-            logger?.Log(Id, Position.x, Position.y, Velocity.x, Velocity.y);
-
             await RaiseNewPositionChangeNotificationAsync();
         }
 
         #endregion private
+
+        #region IDisposable
+
+        public void Dispose()
+        {
+            logTimer?.Dispose();
+        }
+
+        #endregion
     }
 }
