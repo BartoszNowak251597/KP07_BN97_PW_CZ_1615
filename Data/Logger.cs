@@ -28,7 +28,7 @@ namespace Data
         private void WriteLoop()
         {
             var fileStream = new FileStream(filePath, FileMode.Append, FileAccess.Write, FileShare.ReadWrite);
-            using var writer = new StreamWriter(fileStream);
+            using var writer = new StreamWriter(fileStream, System.Text.Encoding.ASCII);
             foreach (var entry in queue.GetConsumingEnumerable(cts.Token))
             {
                 writer.WriteLine(entry);
