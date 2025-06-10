@@ -1,5 +1,7 @@
 using Data;
 using System;
+using System.Diagnostics;
+using System.Threading.Tasks;
 
 namespace Logic
 {
@@ -13,27 +15,34 @@ namespace Logic
         private double mass;
         private readonly object lockObj = new();
 
+        private Stopwatch stopwatch;
+
         public Ball(Guid id, IVector initialPosition, IVector initialVelocity, DataAbstractAPI dataAPI, double tableWidth, double tableHeight, double ballDiameter, double weight)
         {
             ballId = id;
             position = new Position(initialPosition.x, initialPosition.y);
             dataLayer = dataAPI;
-            width = tableWidth-7;
-            height = tableHeight-7;
+            width = tableWidth - 7;
+            height = tableHeight - 7;
             diameter = ballDiameter;
             velocityX = initialVelocity.x;
             velocityY = initialVelocity.y;
             mass = weight;
+            stopwatch = Stopwatch.StartNew();
         }
 
         public event EventHandler<IPosition>? NewPositionNotification;
 
         public async void OnNewPosition(IVector dataPos)
         {
+            double deltaTime;
             lock (lockObj)
             {
+                deltaTime = stopwatch.Elapsed.TotalSeconds;
+                stopwatch.Restart();
+
                 position = new Position(dataPos.x, dataPos.y);
-                position = position.UpdatePosition( velocityX, velocityY, width, height, diameter,out velocityX, out velocityY);
+                position = position.UpdatePosition(velocityX, velocityY, width, height, diameter, out velocityX, out velocityY, deltaTime);
             }
 
             if (NewPositionNotification != null)
@@ -64,12 +73,11 @@ namespace Logic
             }
         }
 
-
         public Position Position
         {
             get { lock (lockObj) { return position; } }
         }
-        
+
         public double Radius => diameter / 2;
         public double VelocityX
         {
@@ -80,7 +88,6 @@ namespace Logic
         {
             get { lock (lockObj) { return velocityY; } }
         }
-
 
         public double Mass => mass;
 

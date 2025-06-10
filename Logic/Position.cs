@@ -13,15 +13,14 @@ namespace Logic
             y = posY;
         }
 
-        public Position UpdatePosition(double velocityX, double velocityY, double width, double height, double diameter, out double updatedVx, out double updatedVy)
+        public Position UpdatePosition(double velocityX, double velocityY, double width, double height, double diameter, out double updatedVx, out double updatedVy, double deltaTime)
         {
-            double newX = x + velocityX;
-            double newY = y + velocityY;
+            double newX = x + velocityX * deltaTime;
+            double newY = y + velocityY * deltaTime;
 
             updatedVx = velocityX;
             updatedVy = velocityY;
 
-            // Odbicie od lewej/prawej
             if (newX < 0)
             {
                 newX = 0;
@@ -33,7 +32,6 @@ namespace Logic
                 updatedVx *= -1;
             }
 
-            // Odbicie od góry/dół
             if (newY < 0)
             {
                 newY = 0;
@@ -49,4 +47,3 @@ namespace Logic
         }
     }
 }
-

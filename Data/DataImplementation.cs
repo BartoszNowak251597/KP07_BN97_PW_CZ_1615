@@ -32,7 +32,7 @@ namespace Data
             for (int i = 0; i < numberOfBalls; i++)
             {
                 Vector startingPosition = new(random.Next(100, 300), random.Next(100, 300));
-                Vector initialVelocity = new((random.NextDouble() - 0.5) * 2, (random.NextDouble() - 0.5) * 2);
+                Vector initialVelocity = new(random.Next(50, 150), random.Next(50, 150));
                 double diameter = random.Next(10, 31);
                 double weight = diameter / 2;
 
