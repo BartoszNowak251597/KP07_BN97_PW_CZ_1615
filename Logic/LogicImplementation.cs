@@ -96,6 +96,7 @@ namespace Logic
 
                         if (distanceSquared <= radiusSum * radiusSum)
                         {
+                            if (!activeCollisions.Contains(idPair))
                             ResolveElasticCollision(currentBall, otherBall);
                         }
                     }
