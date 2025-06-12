@@ -62,6 +62,18 @@ namespace Data
             logger = new BallLogger(filePath);
         }
 
+        public override void LogWallCollision(Guid id, double x, double y, string wall)
+        {
+            logger?.LogWallCollision(id, x, y, wall);
+        }
+
+        public override void LogBallCollision(Guid id1, double x1, double y1, Guid id2, double x2, double y2)
+        {
+            logger?.LogBallCollision(id1, x1, y1, id2, x2, y2);
+        }
+
+
+
         #endregion DataAbstractAPI
 
         #region IDisposable

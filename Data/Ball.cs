@@ -25,7 +25,7 @@ namespace Data
             {
                 logTimer = new Timer(_ =>
                 {
-                    logger.Log(Id, Position.x, Position.y, Velocity.x, Velocity.y);
+                    //logger.Log(Id, Position.x, Position.y, Velocity.x, Velocity.y);
                 }, null, TimeSpan.Zero, TimeSpan.FromSeconds(1));
             }
         }

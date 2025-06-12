@@ -20,7 +20,8 @@ namespace Presentation.ViewModel
         {
             ModelLayer = modelLayerAPI == null ? ModelAbstractApi.CreateModel() : modelLayerAPI;
 
-            string logPath = "diagnostics.csv";
+            string timestamp = DateTime.Now.ToString("yyyyMMdd_HHmmss");
+            string logPath = $"diagnostics_{timestamp}.csv";
             ModelLayer.EnableDiagnostics(logPath);
 
             Observer = ModelLayer.Subscribe<ModelIBall>(x => Balls.Add(x));

@@ -42,7 +42,8 @@ namespace Logic
                 stopwatch.Restart();
 
                 position = new Position(dataPos.x, dataPos.y);
-                position = position.UpdatePosition(velocityX, velocityY, width, height, diameter, out velocityX, out velocityY, deltaTime);
+                position = position.UpdatePosition(velocityX, velocityY,width, height, diameter,out velocityX, out velocityY,deltaTime,ballId,dataLayer );
+
             }
 
             if (NewPositionNotification != null)

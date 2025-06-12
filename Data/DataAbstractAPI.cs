@@ -18,6 +18,9 @@ namespace Data
 
         public virtual void EnableDiagnostics(string filePath) { }
 
+        public abstract void LogWallCollision(Guid id, double x, double y, string wall);
+        public abstract void LogBallCollision(Guid id1, double x1, double y1, Guid id2, double x2, double y2);
+
 
         #endregion public API
 

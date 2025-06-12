@@ -74,6 +74,9 @@ namespace Logic
         private double tableHeight;
         private readonly object logicBallsLock = new();
         public object BallLock { get; } = new();
+        private readonly Dictionary<string, DateTime> recentCollisions = new();
+        private readonly TimeSpan collisionCooldown = TimeSpan.FromMilliseconds(100); // dowolny sensowny czas
+        private readonly object collisionLogLock = new();
 
         private void CheckCollisions(Ball currentBall, List<Ball> allBalls)
         {
@@ -95,8 +98,7 @@ namespace Logic
                         double radiusSum = currentBall.Radius + otherBall.Radius;
 
                         if (distanceSquared <= radiusSum * radiusSum)
-                        {
-                            if (!activeCollisions.Contains(idPair))
+                        {  
                             ResolveElasticCollision(currentBall, otherBall);
                         }
                     }
@@ -104,6 +106,10 @@ namespace Logic
             }
         }
 
+        private string GenerateCollisionKey(Guid id1, Guid id2)
+        {
+            return id1.CompareTo(id2) < 0 ? $"{id1}-{id2}" : $"{id2}-{id1}";
+        }
 
         private void ResolveElasticCollision(Ball a, Ball b)
         {
@@ -112,7 +118,6 @@ namespace Logic
             double distance = Math.Sqrt(dx * dx + dy * dy);
             if (distance == 0) return;
 
-            // Unormowany wektor kierunku
             double nx = dx / distance;
             double ny = dy / distance;
 
@@ -151,9 +156,24 @@ namespace Logic
 
             a.UpdateFromCollision(newVelXA, newVelYA);
             b.UpdateFromCollision(newVelXB, newVelYB);
+            string key = GenerateCollisionKey(a.Id, b.Id);
+            DateTime now = DateTime.UtcNow;
+
+            lock (collisionLogLock)
+            {
+                if (recentCollisions.TryGetValue(key, out DateTime lastLogged) && (now - lastLogged) < collisionCooldown)
+                {
+                    return;
+                }
+
+                recentCollisions[key] = now;
+
+                layerBellow.LogBallCollision(
+                    a.Id, a.Position.x, a.Position.y,
+                    b.Id, b.Position.x, b.Position.y
+                );
+            }
         }
-
-
 
         #endregion private
 

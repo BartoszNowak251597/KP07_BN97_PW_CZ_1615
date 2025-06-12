@@ -25,6 +25,18 @@ namespace Data
             queue.Add(line);
         }
 
+        public void LogWallCollision(Guid id, double x, double y, string wall)
+        {
+            string line = $"{DateTime.Now:o};WALL_COLLISION;{id};{x:F2};{y:F2};{wall}";
+            queue.Add(line);
+        }
+
+        public void LogBallCollision(Guid id1, double x1, double y1, Guid id2, double x2, double y2)
+        {
+            string line = $"{DateTime.Now:o};BALL_COLLISION;{id1};{x1:F2};{y1:F2};{id2};{x2:F2};{y2:F2}";
+            queue.Add(line);
+        }
+
         private void WriteLoop()
         {
             var fileStream = new FileStream(filePath, FileMode.Append, FileAccess.Write, FileShare.ReadWrite);
